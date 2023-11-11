@@ -35,27 +35,24 @@ void anadir_particulas(std::vector<Block>& bloques , std::vector<Particle>& part
 
 
 
+bool isValidIndices(int i, int j, int k) {
+    return i >= 0 && i < nx && j >= 0 && j < ny && k >= 0 && k < nz;
+}
 
 void anotar_adyacentes(std::vector<Block>& bloques) {
-    //Bucle de todos los bloques
+    // Bucle de todos los bloques
     for (int i = 0; i < nx; ++i) {
         for (int j = 0; j < ny; ++j) {
             for (int k = 0; k < nz; ++k) {
                 Block& currentBlock = bloques[(k * ny * nx) + (j * nx) + i];
 
-                //Todas las posibles posiciones de bloques adyacentes
+                // Todas las posibles posiciones de bloques adyacentes
                 for (int di = -1; di <= 1; ++di) {
-                    if (di+i> 0 && di+i<nx){
-                        for (int dj = -1; dj <= 1; ++dj) {
-                            if (dj+j> 0 && dj+j<ny) {
-                                for (int dk = -1; dk <= 1; ++dk) {
-                                    if (dk+k> 0 && dk+k<nz) {
-                                        //Comprobar que es un bloque adyacente
-                                        Block &neighborBlock = bloques[((k + dk) * ny * nx) + ((j + dj) * nx) +
-                                                                       (i + di)];
-                                        currentBlock.adyacentes.push_back(neighborBlock);
-                                    }
-                                }
+                    for (int dj = -1; dj <= 1; ++dj) {
+                        for (int dk = -1; dk <= 1; ++dk) {
+                            // Comprobar que es un bloque adyacente y no el mismo bloque
+                            if (!(di == 0 && dj == 0 && dk == 0) && isValidIndices(i + di, j + dj, k + dk)) {
+                                currentBlock.adyacentes.push_back(bloques[((k + dk) * ny * nx) + ((j + dj) * nx) + (i + di)]);
                             }
                         }
                     }
@@ -64,6 +61,7 @@ void anotar_adyacentes(std::vector<Block>& bloques) {
         }
     }
 }
+
 
 void crearBloques(std::vector<Block>& bloques,std::vector<Particle>& particles){
     // Primero, creamos los bloques
@@ -76,10 +74,7 @@ void crearBloques(std::vector<Block>& bloques,std::vector<Particle>& particles){
         }
     }
     anotar_adyacentes(bloques);
-    for (int i=0; i<1; i++) {
-    //anadir_particulas(bloques, particles);
-    //incrementar_dens(bloques, particles);
-    }
+
 }
 
 
