@@ -7,7 +7,7 @@
 #include <vector>
 #include <set>
 
-
+/*
 struct ParticleEntry {
         int cx, cy, cz;
         Particle particle;
@@ -59,21 +59,10 @@ int ajustarLimite(int value, int lowerLimit, int  upperLimit) {
 
 int main_block(std::vector<Particle>& particles) {
     Grid grid;
-    /*for (const Particle& particle : particles) {
-        std::cout << "px: " << particle.px << std::endl;
-        std::cout << "py: " << particle.py << std::endl;
-        std::cout << "pz: " << particle.pz << std::endl;
-        std::cout << "hvx: " << particle.hvx << std::endl;
-        std::cout << "hvy: " << particle.hvy << std::endl;
-        std::cout << "hvz: " << particle.hvz << std::endl;
-        std::cout << "vx: " << particle.vx << std::endl;
-        std::cout << "vy: " << particle.vy << std::endl;
-        std::cout << "vz: " << particle.vz << std::endl;
-        std::cout << "---------------------" << std::endl;
-    }*/
+
 
     // Accede a los valores de nx, ny, nz a través del método getN()
-    std::vector<double> n = grid.getN();
+    std::vector<int> n = grid.getN();
     std::vector<double> blockSize = grid.calculateBlockSize();
 
     std::vector<ParticleEntry> particleGrid;
@@ -109,6 +98,7 @@ int main_block(std::vector<Particle>& particles) {
         particleGrid.push_back({i, j, k, particle});
     }
     double incrementar_densidad = 0;
+
     //Incremento de densidades OK!!
     for (std::vector<ParticleEntry>::size_type i = 0; i < particleGrid.size(); ++i) {
         ParticleEntry& entry_i = particleGrid[i];
@@ -119,11 +109,11 @@ int main_block(std::vector<Particle>& particles) {
             // Solo procesa el par de partículas si son contiguas.
             if (abs(entry_i.cx - entry_j.cx) <= 1 &&
                 abs(entry_i.cy - entry_j.cy) <= 1 &&
-                abs(entry_i.cz - entry_j.cz) <= 1) {
+                abs(entry_i.cz - entry_j.cz) <= 1) {*/
                 /*if (contador==0){
                     std::cout <<"contador: "<< entry_i.cx << entry_i.cy << entry_i.cz << ", " << entry_j.cx << entry_j.cy << entry_j.cz<< std::endl;}*/
                 //Este if SOBRA
-                if (processed_pairs.find({i, j}) == processed_pairs.end()) {
+                /*if (processed_pairs.find({i, j}) == processed_pairs.end()) {
                     if (distanciaMenosH2(particle_i, particle_j)) {
                         incrementar_densidad = diferenciaDistancias(particle_i, particle_j);
                         //std::cout <<"2: "<<incrementar_densidad<<"     ";
@@ -182,12 +172,12 @@ int main_block(std::vector<Particle>& particles) {
     //Transferencia de aceleracion.OK!!
     for (std::vector<ParticleEntry>::size_type i = 0; i < particleGrid.size(); ++i) {
         ParticleEntry &entry_i = particleGrid[i];
-        Particle &particle_i = entry_i.particle;
+        Particle &particle_i = entry_i.particle;*/
         /*
         if (i > 10) {
             std::cout << "posicion: " << particle_i.px << "," << particle_i.py << "," << particle_i.pz << std::endl;
         }*/
-        for (std::vector<ParticleEntry>::size_type j = i + 1; j < particleGrid.size(); ++j) {
+        /*for (std::vector<ParticleEntry>::size_type j = i + 1; j < particleGrid.size(); ++j) {
             ParticleEntry &entry_j = particleGrid[j];
             Particle &particle_j = entry_j.particle;
             // Solo procesa el par de partículas si son contiguas.
@@ -243,7 +233,7 @@ int main_block(std::vector<Particle>& particles) {
                 }
             }
         }
-    }
+    }*/
 
     /*for (Particle& particle : particles) {
         std::cout <<"aceleracion: "<<particle.aceleracion_externa.z<<"\n ";
@@ -259,7 +249,7 @@ int main_block(std::vector<Particle>& particles) {
 
 //-----------------------------------------------------------------------------------------------------
     //Colisiones de partículas.OK!!
-    double difx = 0;
+    /*double difx = 0;
     double dify = 0;
     double difz= 0;
     double contador = 1;
@@ -321,7 +311,7 @@ int main_block(std::vector<Particle>& particles) {
                 particles[i].aceleracion_externa.z  = particle_i.aceleracion_externa.z;
             }
         }
-    }
+    }*/
 
     /*for (Particle& particle : particles) {
         std::cout <<"aceleracionx: "<<particle.aceleracion_externa.x<<" ";
@@ -330,7 +320,7 @@ int main_block(std::vector<Particle>& particles) {
     }*/
 
     //Movimiento de particulas.OK!!!
-    for (Particle& particle : particles) {
+    /*for (Particle& particle : particles) {
         particle.px = particle.px + (particle.hvx*paso_de_tiempo)+(particle.aceleracion_externa.x*std::pow(paso_de_tiempo, 2));
         particle.py = particle.py + (particle.hvy*paso_de_tiempo)+(particle.aceleracion_externa.y*std::pow(paso_de_tiempo, 2));
         particle.pz = particle.pz + (particle.hvz*paso_de_tiempo)+(particle.aceleracion_externa.z*std::pow(paso_de_tiempo, 2));
@@ -342,14 +332,14 @@ int main_block(std::vector<Particle>& particles) {
         particle.hvx = particle.hvx + (particle.aceleracion_externa.x*paso_de_tiempo);
         particle.hvy = particle.hvy + (particle.aceleracion_externa.y*paso_de_tiempo);
         particle.hvz = particle.hvz + (particle.aceleracion_externa.z*paso_de_tiempo);
-    }
+    }*/
 
     /*for (Particle& particle : particles) {
         std::cout <<"aceleracionx: "<<particle.hvx<<" ";
         std::cout <<"aceleraciony: "<<particle.hvy<<" ";
         std::cout <<"aceleracionz: "<<particle.hvz<<"\n ";
     }*/
-    particleGrid.clear();
+    /*particleGrid.clear();
     for (Particle& particle : particles) {
         int i = static_cast<int>(std::floor((particle.px - xmin) / sx));
         int j = static_cast<int>(std::floor((particle.py - ymin) / sy));
@@ -367,7 +357,7 @@ int main_block(std::vector<Particle>& particles) {
 
 
     //Interacciones con los límites del recinto.okkk.
-    double conntador = 1;
+    //double conntador = 1;
     for (std::vector<ParticleEntry>::size_type i = 0; i < particleGrid.size(); ++i) {
         ParticleEntry &entry_i = particleGrid[i];
         Particle &particle_i = entry_i.particle;
@@ -451,4 +441,4 @@ int main_block(std::vector<Particle>& particles) {
     }
 
     return 0;
-}
+}*/

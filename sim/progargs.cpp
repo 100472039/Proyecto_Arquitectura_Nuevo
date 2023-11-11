@@ -4,6 +4,7 @@
 #include "progargs.hpp"
 #include "../constantes.hpp"
 #include "block.cpp"
+#include "bloque.cpp"
 
 int ReadFile(std::vector<Particle> &particles, std::ifstream &file, int np, int contador);
 template <typename T>
@@ -78,7 +79,7 @@ int ReadFile(std::vector<Particle>& particles, std::ifstream& file, int np, int 
         vz_float = read_binary_value<float>(file);
 
 
-        // Convierte los valores float a double y guárdalos en la estructura Particle
+        // Convierte los valores float a double y los guarda en la estructura Particle
         particle.px = static_cast<double>(px_float);
         particle.py = static_cast<double>(py_float);
         particle.pz = static_cast<double>(pz_float);
@@ -197,8 +198,8 @@ int sim_main(int argc, char* argv[]) {
     double m;
     double h;
     parametrosSimulacion(ppm, m, h);
-    for (int i=0; i<2; i++) {
-        main_block(particles);
+    for (int i=0; i<1; i++) {
+        generar_malla(particles);
     }
 /*
  *

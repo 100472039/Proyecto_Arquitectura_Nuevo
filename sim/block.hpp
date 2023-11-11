@@ -16,3 +16,4 @@ int ajustarLimite(int value, int lowerLimit, int upperLimit);
 
 int main_block(std::vector<Particle>& particles);
 #endif //PROYECTO_ARQUITECTURA_BLOCK_HPP
+

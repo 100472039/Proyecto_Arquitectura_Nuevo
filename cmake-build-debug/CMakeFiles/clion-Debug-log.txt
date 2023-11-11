@@ -1,1 +1,4 @@
-CMakeLists.txt not found in /home/alberto/Documentos/Arquitectura/Proyecto_Arquitectura_Nuevo Select CMakeLists.txt
+/opt/CLion/CLion-2023.2.2/clion-2023.2.2/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/opt/CLion/CLion-2023.2.2/clion-2023.2.2/bin/ninja/linux/x64/ninja -G Ninja -S /home/anamaria/CLionProjects/Proyecto_Arquitectura_Nuevo -B /home/anamaria/CLionProjects/Proyecto_Arquitectura_Nuevo/cmake-build-debug
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/anamaria/CLionProjects/Proyecto_Arquitectura_Nuevo/cmake-build-debug

@@ -13,11 +13,18 @@ public:
     Grid(); // Constructor
 
     // Método para obtener el vector n
-    std::vector<double> getN();
+    std::vector<int> getN();
     std::vector<double> calculateBlockSize();
 
 private:
-    std::vector<double> n;
+    std::vector<int> n;
 };
+int nx;
+int ny;
+int nz;
+double sx;
+double sy;
+double sz;
+
 
 #endif
