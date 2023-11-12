@@ -51,8 +51,8 @@ void anotar_adyacentes(std::vector<Block>& bloques) {
                     for (int dj = -1; dj <= 1; ++dj) {
                         for (int dk = -1; dk <= 1; ++dk) {
                             // Comprobar que es un bloque adyacente y no el mismo bloque
-                            if (!(di == 0 && dj == 0 && dk == 0) && isValidIndices(i + di, j + dj, k + dk)) {
-                                currentBlock.adyacentes.push_back(bloques[((k + dk) * ny * nx) + ((j + dj) * nx) + (i + di)]);
+                            if (isValidIndices(i + di, j + dj, k + dk)&&!(di == 0 && dj == 0 && dk == 0)){
+                                currentBlock.adyacentes.push_back(bloques[((k + dk) * ny * nx) + ((j + dj) * nx) + (i + di)].id);
                             }
                         }
                     }
@@ -61,19 +61,32 @@ void anotar_adyacentes(std::vector<Block>& bloques) {
         }
     }
 }
+void recorrer_adyacentes(std::vector<Block>& bloques) {
+    for (const Block &bloque : bloques) {
+        std::cout << "\nBloque actual: (" << bloque.id << ")     ";
+        std::cout << "Bloques adyacentes:";
 
+        for (int adyacente: bloque.adyacentes) {
+            std::cout << "  (" << adyacente<< ") ";
+            // Realiza las operaciones que desees con el bloque adyacente
+        }
+    }
+}
 
 void crearBloques(std::vector<Block>& bloques,std::vector<Particle>& particles){
     // Primero, creamos los bloques
+    int id = 0;
     for (int i = 0; i < nx; ++i) {
         for (int j = 0; j < ny; ++j) {
             for (int k = 0; k < nz; ++k) {
                 Block block;
+                block.id = id++;
                 bloques.push_back(block);
             }
         }
     }
     anotar_adyacentes(bloques);
+    recorrer_adyacentes(bloques);
 
 }
 
