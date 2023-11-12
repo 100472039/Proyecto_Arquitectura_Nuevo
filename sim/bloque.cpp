@@ -62,6 +62,7 @@ void anotar_adyacentes(std::vector<Block>& bloques) {
         }
     }
 }
+
 void recorrer_adyacentes(std::vector<Block>& bloques) {
     for (const Block &bloque : bloques) {
         std::cout << "\nBloque actual: (" << bloque.id << ")     ";
