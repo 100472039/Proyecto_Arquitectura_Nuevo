@@ -94,6 +94,7 @@ int ReadFile(std::vector<Particle>& particles, std::ifstream& file, int np, int 
         particle.aceleracion_externa.x = aceleracion_x;
         particle.aceleracion_externa.y = aceleracion_y;
         particle.aceleracion_externa.z = aceleracion_z;
+        particle.id = contador;
 
         ++contador;
         particles.push_back(particle);
