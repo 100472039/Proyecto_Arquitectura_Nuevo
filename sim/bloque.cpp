@@ -51,8 +51,9 @@ void anotar_adyacentes(std::vector<Block>& bloques) {
                     for (int dj = -1; dj <= 1; ++dj) {
                         for (int dk = -1; dk <= 1; ++dk) {
                             // Comprobar que es un bloque adyacente y no el mismo bloque
-                            if (isValidIndices(i + di, j + dj, k + dk)&&!(di == 0 && dj == 0 && dk == 0)){
-                                currentBlock.adyacentes.push_back(bloques[((k + dk) * ny * nx) + ((j + dj) * nx) + (i + di)].id);
+                            if (isValidIndices(i + di, j + dj, k + dk)){
+                                if (bloques[((k + dk) * ny * nx) + ((j + dj) * nx) + (i + di)].id>= currentBlock.id){
+                                    currentBlock.adyacentes.push_back(bloques[((k + dk) * ny * nx) + ((j + dj) * nx) + (i + di)].id);}
                             }
                         }
                     }
