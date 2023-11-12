@@ -56,7 +56,7 @@ bool distanciaMenosH2(const Particle& particle_i, const Particle& particle_j) {
 bool isValidIndices(int i, int j, int k) {
     return i >= 0 && i < nx && j >= 0 && j < ny && k >= 0 && k < nz;
 }
-
+/*
 void anotar_adyacentes(std::vector<Block>& bloques) {
     // Bucle de todos los bloques
     for (int i = 0; i < nx; ++i) {
@@ -188,17 +188,7 @@ void incrementar_densidades(std::vector<Block>& bloques, std::vector<Particle>& 
     }
 }*/
 
-void recorrer_adyacentes(std::vector<Block>& bloques) {
-    for (const Block &bloque : bloques) {
-        std::cout << "\nBloque actual: (" << bloque.id << ")     ";
-        std::cout << "Bloques adyacentes:";
 
-        for (int adyacente: bloque.adyacentes) {
-            std::cout << "  (" << adyacente<< ") ";
-            // Realiza las operaciones que desees con el bloque adyacente
-        }
-    }
-}
 
 void crearBloques(std::vector<Block>& bloques,std::vector<Particle>& particles){
     // Primero, creamos los bloques
