@@ -211,7 +211,6 @@ void crearBloques(std::vector<Block>& bloques,std::vector<Particle>& particles){
 }
 
 
-
 void generar_malla(std::vector<Particle>& particles) {
     Grid grid;
     std::vector<Block> bloques;

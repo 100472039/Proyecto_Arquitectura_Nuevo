@@ -110,7 +110,7 @@ int main_block(std::vector<Particle>& particles) {
             if (abs(entry_i.cx - entry_j.cx) <= 1 &&
                 abs(entry_i.cy - entry_j.cy) <= 1 &&
                 abs(entry_i.cz - entry_j.cz) <= 1) {*/
-                /*if (contador==0){
+                /*if (contador==0){in
                     std::cout <<"contador: "<< entry_i.cx << entry_i.cy << entry_i.cz << ", " << entry_j.cx << entry_j.cy << entry_j.cz<< std::endl;}*/
                 //Este if SOBRA
                 /*if (processed_pairs.find({i, j}) == processed_pairs.end()) {
