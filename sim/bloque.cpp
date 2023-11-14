@@ -144,6 +144,11 @@ void incrementar_densidades(std::vector<Block>& bloques, std::vector<Particle>& 
     }
     std::cout << contador << "\n";
 }
+void eliminar_particulas(std::vector<Block>& bloques) {
+    for (Block &bloque : bloques) {
+        bloque.particles.clear();
+    }
+}
 
 
 //BING
@@ -204,9 +209,10 @@ void crearBloques(std::vector<Block>& bloques,std::vector<Particle>& particles){
     }
     //anotar_adyacentes(bloques);
     //recorrer_adyacentes(bloques);
-    for(int i=0;i<20;i++){
+    for(int i=0;i<2000;i++){
         anadir_particulas(bloques,particles);
         incrementar_densidades(bloques,particles);
+        eliminar_particulas(bloques);
     }
 }
 
