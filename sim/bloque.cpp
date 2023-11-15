@@ -18,7 +18,20 @@ double ajustarLim(double value, double lowerLimit, double upperLimit) {
     }
     return value;
 }
+double calcularDistij(const Particle& particle_i, const Particle& particle_j) {
+    double distx = particle_i.px - particle_j.px;
+    double disty = particle_i.py - particle_j.py;
+    double distz = particle_i.pz - particle_j.pz;
 
+    // Calcula la distancia euclidiana entre las partículas
+    double distanciaCuadrada = (distx * distx )+ (disty * disty )+ (distz * distz);
+
+    double distij = std::max(distanciaCuadrada, epsilon);
+    double distij2 = std::sqrt(distij);
+    //std::cout <<"2: "<<distanciaCuadrada<<"     ";
+
+    return distij2;
+}
 void anadir_particulas(std::vector<Block>& bloques , std::vector<Particle>& particles){
 
     for (int i=0;i<4800;i++) {
@@ -80,43 +93,6 @@ void anotar_adyacentes(std::vector<Block>& bloques) {
         }
     }
 }
-/*
-void anotar_adyacentes(std::vector<Block>& bloques) {
-    // Bucle de todos los bloques
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
-                Block& currentBlock = bloques[(k * ny * nx) + (j * nx) + i];
-
-                // Determinar los límites de las iteraciones para los bloques adyacentes
-                int min_di = (i == 0) ? 0 : -1;
-                int max_di = (i == nx ) ? 0 : 1;
-                int min_dj = (j == 0) ? 0 : -1;
-                int max_dj = (j == ny ) ? 0 : 1;
-                int min_dk = (k == 0) ? 0 : -1;
-                int max_dk = (k == nz ) ? 0 : 1;
-
-                // Todas las posibles posiciones de bloques adyacentes
-                for (int di = min_di; di <= max_di; ++di) {
-                    for (int dj = min_dj; dj <= max_dj; ++dj) {
-                        for (int dk = min_dk; dk <= max_dk; ++dk) {
-                            Block &currentBlock = bloques[(k * ny * nx) + (j * nx) + i];
-                            // Comprobar que es un bloque adyacente y no el mismo bloque
-                            if (isValidIndices(i + di, j + dj, k + dk)) {
-                                if (bloques[((k + dk) * ny * nx) + ((j + dj) * nx) + (i + di)].id >=
-                                    currentBlock.id) {
-                                    currentBlock.adyacentes.push_back(
-                                            bloques[((k + dk) * ny * nx) + ((j + dj) * nx) + (i + di)].id);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}*/
-
 
 
 
@@ -131,18 +107,21 @@ void incrementar_densidades(std::vector<Block>& bloques, std::vector<Particle>& 
             for (double neighbor : currentBlock.adyacentes) {
                 Block &siguiente = bloques[neighbor];
                 for (Particle& particle_j : siguiente.particles) {
-                        if (particle_i.id != particle_j.id) {
-                            if (particle_i.id>particle_j.id){
-                            if (distanciaMenosH2(particle_i, particle_j)) {
-                                double dist = diferenciaDistancias(particle_i, particle_j);
-                                dens_increment = (h2 - dist) * (h2 - dist) * (h2 - dist);
-                            }else{
-                                dens_increment= 0;
-                            }
-                            particle_i.rho += dens_increment;
-                            particle_j.rho += dens_increment;
+
+                    if (particle_i.id>particle_j.id){
+                        if (distanciaMenosH2(particle_i, particle_j)) {
+                            double dist = diferenciaDistancias(particle_i, particle_j);
+                            dens_increment = (h2 - dist) * (h2 - dist) * (h2 - dist);
+                        }else{
+                            dens_increment= 0;
                         }
-                        }
+                        particles[particle_i.id].rho+= dens_increment;
+                        particles[particle_j.id].rho +=dens_increment;
+
+                        particle_i.rho += dens_increment;
+                        particle_j.rho += dens_increment;
+                    }
+
                 }
 
             }
@@ -151,48 +130,68 @@ void incrementar_densidades(std::vector<Block>& bloques, std::vector<Particle>& 
 }
 
 
-
-//BING
-/*void incrementar_densidades(std::vector<Block>& bloques,std::vector<Particle>& particles) {
-    double incrementar_densidad = 0;
-    double h2 = (smooth*smooth);
-    double h6 = h2 * h2 * h2; // Precomputar h^6
-
-    // Crear un vector para almacenar las distancias precomputadas
-    std::vector<std::vector<double>> distancias(particles.size(), std::vector<double>(particles.size(), 0));
-
-    // Precomputar todas las distancias
-    for (int i = 0; i < particles.size(); ++i) {
-        for (int j = i+1; j < particles.size(); ++j) {
-            distancias[i][j] = distanciaMenosH2(particles[i], particles[j]);
-            distancias[j][i] = distancias[i][j]; // Aprovechar la simetría para reducir los cálculos
-        }
+void transformar_densidades(std::vector<Particle>& particles){
+    double parte2 = numero_dens1/(numero_dens2*pi*(smooth*smooth*smooth*smooth*smooth*smooth*smooth*smooth*smooth));
+    for (Particle& particle : particles) {
+        double parte1 = particle.rho + std::pow(smooth, 6);
+        particle.rho = parte1 * parte2 * masa;
+        //std::cout <<"densidad_particula: "<<particle.rho<<"\n ";
     }
+}
 
-    for (const Block &bloque: bloques){
-        int currentBlock = bloque.id;
-        Block& currenBlock = bloques[bloque.id];
-        for (int adyacente: bloque.adyacentes) {
-            Block& bloque_adyacente = bloques[adyacente];
-            for (Particle& particula_i : currenBlock.particles){
-                for (Particle& particula_j : bloque_adyacente.particles){
-                    if (distancias[particula_i.id][particula_j.id]) {
-                        incrementar_densidad = h6 - distancias[particula_i.id][particula_j.id];
-                        incrementar_densidad *= incrementar_densidad * incrementar_densidad;
+void transferencia_aceleracion(std::vector<Block>& bloques, std::vector<Particle>& particles) {
+    double fraccion2 = quarentaycinco / (pi * smooth*smooth*smooth*smooth*smooth*smooth);
+    double fraccion3 = quince / (pi * smooth*smooth*smooth*smooth*smooth*smooth);
+    double fraccion4 = (3 * masa * presion_de_rigidez) / 2;
+    for (Block& currentBlock : bloques) {
+        for (Particle& particle_i : currentBlock.particles) {
+            for (double neighbor: currentBlock.adyacentes) {
+                Block &siguiente = bloques[neighbor];
+                for (Particle &particle_j: siguiente.particles) {
+                    if (particle_i.id > particle_j.id) {
+                        if (distanciaMenosH2(particle_i, particle_j)) {
+                            double distij = calcularDistij(particle_i, particle_j);
+
+                            double fraccion1 = ((smooth - distij) * (smooth - distij)) / distij;
+
+                            double incremento_aceleracionx =
+                                    (((particle_i.px - particle_j.px) * fraccion3 * fraccion4 * fraccion1 * (particle_i.rho + particle_j.rho - 2 * densidad)) +
+                                    ((particle_j.vx - particle_i.vx) * fraccion2 * viscosidad * masa))/ (particle_i.rho * particle_j.rho);
+                            double incremento_aceleraciony =
+                                    (((particle_i.py - particle_j.py) * fraccion3 * fraccion4 * fraccion1 * (particle_i.rho + particle_j.rho - 2 * densidad)) +
+                                    ((particle_j.vy - particle_i.vy) * fraccion2 * viscosidad * masa))/(particle_i.rho * particle_j.rho);
+
+                            double incremento_aceleracionz = (((particle_i.pz - particle_j.pz) * fraccion3 * fraccion4 * fraccion1 * (particle_i.rho + particle_j.rho - 2 * densidad)) +
+                                                               ((particle_j.vz - particle_i.vz) * fraccion2 * viscosidad * masa)) / (particle_i.rho * particle_j.rho);
+
+                            particle_i.aceleracion_externa.x += incremento_aceleracionx;
+                            particle_i.aceleracion_externa.y += incremento_aceleraciony;
+                            particle_i.aceleracion_externa.z += incremento_aceleracionz;
+
+                            particle_j.aceleracion_externa.x -= incremento_aceleracionx;
+                            particle_j.aceleracion_externa.y -= incremento_aceleraciony;
+                            particle_j.aceleracion_externa.z -= incremento_aceleracionz;
+
+                            particles[particle_i.id].aceleracion_externa.x = particle_i.aceleracion_externa.x;
+                            particles[particle_j.id].aceleracion_externa.x = particle_j.aceleracion_externa.x;
+                            particles[particle_i.id].aceleracion_externa.y = particle_i.aceleracion_externa.y;
+                            particles[particle_j.id].aceleracion_externa.y = particle_j.aceleracion_externa.y;
+                            particles[particle_i.id].aceleracion_externa.z = particle_i.aceleracion_externa.z;
+                            particles[particle_j.id].aceleracion_externa.z = particle_j.aceleracion_externa.z;
+                        }
                     }
-                    else{
-                        incrementar_densidad = 0;
-                    }
-
-                    particula_i.rho += incrementar_densidad;
-                    particula_j.rho += incrementar_densidad;
-
                 }
-
             }
         }
+    }for (Particle& particle : particles) {
+        std::cout <<"aceleracionx: "<<particle.aceleracion_externa.x<<" ";
+        std::cout <<"aceleraciony: "<<particle.aceleracion_externa.y<<" ";
+        std::cout <<"aceleracionz: "<<particle.aceleracion_externa.z<<"\n ";
+
     }
-}*/
+}
+
+
 
 void eliminar_particulas(std::vector<Block>& bloques) {
     for (Block &bloque : bloques) {
@@ -218,9 +217,11 @@ void crearBloques(std::vector<Block>& bloques,std::vector<Particle>& particles){
     }
     anotar_adyacentes(bloques);
     //recorrer_adyacentes(bloques);
-    for(int i=0;i<2000;i++){
+    for(int i=0;i<1;i++){
         anadir_particulas(bloques,particles);
         incrementar_densidades(bloques,particles);
+        transformar_densidades(particles);
+        transferencia_aceleracion(bloques,particles);
         eliminar_particulas(bloques);
     }
 }
