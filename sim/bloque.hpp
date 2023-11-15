@@ -12,10 +12,10 @@
 
 
 struct Block {
-    int id;  // Identificador único del bloque
+    double id;  // Identificador único del bloque
     int i, j, k;  // Índices del bloque
     std::vector<Particle> particles;
-    std::vector<int> adyacentes;  // Almacena los identificadores de los bloques adyacentes
+    std::vector<double> adyacentes;  // Almacena los identificadores de los bloques adyacentes
 };
 
 

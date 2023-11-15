@@ -25,7 +25,7 @@ struct Particle {
     double vx, vy, vz;
     double rho;
     VectorAceleracion aceleracion_externa;
-    int id;
+    double id;
 };
 
 struct LoadResult {

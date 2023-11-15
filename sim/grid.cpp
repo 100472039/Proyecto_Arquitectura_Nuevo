@@ -7,9 +7,9 @@
 
 Grid::Grid() {
     // Calcular los tamaños de malla nx, ny y nz
-    const int n_x = std::floor((xmax - xmin) / smooth);
-    const int n_y = std::floor((ymax - ymin) / smooth);
-    const int n_z = std::floor((zmax - zmin) / smooth);
+    const double n_x = std::floor((xmax - xmin) / smooth);
+    const double n_y = std::floor((ymax - ymin) / smooth);
+    const double n_z = std::floor((zmax - zmin) / smooth);
     ::nx = n_x;
     ::ny = n_y;
     ::nz = n_z;
@@ -23,7 +23,7 @@ Grid::Grid() {
     n = {nx, ny, nz};
 }
 
-std::vector<int> Grid::getN() {
+std::vector<double> Grid::getN() {
     return n;
 }
 
