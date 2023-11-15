@@ -10,7 +10,7 @@
 #include <vector>
 #include <set>
 
-int ajustarLim(int value, int lowerLimit, int  upperLimit) {
+double ajustarLim(double value, double lowerLimit, double upperLimit) {
     if (value < lowerLimit) {
         return lowerLimit;
     } if (value >= upperLimit) {
@@ -24,9 +24,9 @@ void anadir_particulas(std::vector<Block>& bloques , std::vector<Particle>& part
     for (int i=0;i<4800;i++) {
 
         // Calcular los índices de bloque para la partícula
-        int pos_i = ajustarLim(std::floor((particles[i].px - xmin) / sx), 0, nx);
-        int pos_j = ajustarLim(std::floor((particles[i].py - ymin) / sy), 0, ny);
-        int pos_k = ajustarLim(std::floor((particles[i].pz - zmin) / sz), 0, nz);
+        double pos_i = ajustarLim(std::floor((particles[i].px - xmin) / sx), 0, nx);
+        double pos_j = ajustarLim(std::floor((particles[i].py - ymin) / sy), 0, ny);
+        double pos_k = ajustarLim(std::floor((particles[i].pz - zmin) / sz), 0, nz);
 
 
         bloques[(pos_k * ny * nx) + (pos_j * nx) + pos_i].particles.push_back(particles[i]);
@@ -56,6 +56,30 @@ bool distanciaMenosH2(const Particle& particle_i, const Particle& particle_j) {
 bool isValidIndices(int i, int j, int k) {
     return i >= 0 && i < nx && j >= 0 && j < ny && k >= 0 && k < nz;
 }
+
+void anotar_adyacentes(std::vector<Block>& bloques) {
+    // Bucle de todos los bloques
+    for (int i = 0; i < nx; ++i) {
+        for (int j = 0; j < ny; ++j) {
+            for (int k = 0; k < nz; ++k) {
+                Block& currentBlock = bloques[(k * ny * nx) + (j * nx) + i];
+
+                // Todas las posibles posiciones de bloques adyacentes
+                for (int di = -1; di <= 1; ++di) {
+                    for (int dj = -1; dj <= 1; ++dj) {
+                        for (int dk = -1; dk <= 1; ++dk) {
+                            // Comprobar que es un bloque adyacente y no el mismo bloque
+                            if (isValidIndices(i + di, j + dj, k + dk)) {
+                                //if (currentBlock.id<=bloques[((k + dk) * ny * nx) + ((j + dj) * nx) + (i + di)].id){
+                                bloques[(k * ny * nx) + (j * nx) + i].adyacentes.push_back(bloques[((k + dk) * ny * nx) + ((j + dj) * nx) + (i + di)].id);}
+                            //}
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 /*
 void anotar_adyacentes(std::vector<Block>& bloques) {
     // Bucle de todos los bloques
@@ -66,11 +90,11 @@ void anotar_adyacentes(std::vector<Block>& bloques) {
 
                 // Determinar los límites de las iteraciones para los bloques adyacentes
                 int min_di = (i == 0) ? 0 : -1;
-                int max_di = (i == nx - 1) ? 0 : 1;
+                int max_di = (i == nx ) ? 0 : 1;
                 int min_dj = (j == 0) ? 0 : -1;
-                int max_dj = (j == ny - 1) ? 0 : 1;
+                int max_dj = (j == ny ) ? 0 : 1;
                 int min_dk = (k == 0) ? 0 : -1;
-                int max_dk = (k == nz - 1) ? 0 : 1;
+                int max_dk = (k == nz ) ? 0 : 1;
 
                 // Todas las posibles posiciones de bloques adyacentes
                 for (int di = min_di; di <= max_di; ++di) {
@@ -91,64 +115,41 @@ void anotar_adyacentes(std::vector<Block>& bloques) {
             }
         }
     }
-}
-*/
+}*/
+
+
+
+
+//Este da bien 25s
 void incrementar_densidades(std::vector<Block>& bloques, std::vector<Particle>& particles) {
     const double h2 = smooth * smooth;
     int contador = 0;
+    double dens_increment = 0;
 
-    int index = 0;
-    for (int index = 0; index < nx*ny*nz; index ++) {
-        Block &currentBlock = bloques[index];
-
-        int i = index % nx;
-        int j = (index / nx) % ny;
-        int k = index / (nx * ny);
-
-        // Determine the limits for iterations over adjacent blocks
-        int min_di = (i == 0) ? 0 : -1;
-        int max_di = (i == nx - 1) ? 0 : 1;
-        int min_dj = (j == 0) ? 0 : -1;
-        int max_dj = (j == ny - 1) ? 0 : 1;
-        int min_dk = (k == 0) ? 0 : -1;
-        int max_dk = (k == nz - 1) ? 0 : 1;
-
-        for (int di = min_di; di <= max_di; ++di) {
-            for (int dj = min_dj; dj <= max_dj; ++dj) {
-                for (int dk = min_dk; dk <= max_dk; ++dk) {
-                    Block &neighbor = bloques[(k + dk) * ny * nx + (j + dj) * nx + (i + di)];
-                    {
-                        Block &neighbor = bloques[(k + dk) * ny * nx + (j + dj) * nx + (i + di)];
-
-                        if (neighbor.id <= currentBlock.id) {
-                            for (Particle &particle_i: currentBlock.particles) {
-                                for (Particle &particle_j: neighbor.particles) {
-                                    if (particle_i.id != particle_j.id) {
-                                        if (distanciaMenosH2(particle_i, particle_j)) {
-                                            double dist = diferenciaDistancias(particle_i, particle_j);
-                                            double dens_increment = (h2 - dist) * (h2 - dist) * (h2 - dist);
-
-                                            particle_i.rho += dens_increment;
-                                            particle_j.rho += dens_increment;
-                                        }
-                                    }
-                                }
+    for (Block& currentBlock : bloques) {
+        for (Particle& particle_i : currentBlock.particles) {
+            for (double neighbor : currentBlock.adyacentes) {
+                Block &siguiente = bloques[neighbor];
+                for (Particle& particle_j : siguiente.particles) {
+                        if (particle_i.id != particle_j.id) {
+                            if (particle_i.id>particle_j.id){
+                            if (distanciaMenosH2(particle_i, particle_j)) {
+                                double dist = diferenciaDistancias(particle_i, particle_j);
+                                dens_increment = (h2 - dist) * (h2 - dist) * (h2 - dist);
+                            }else{
+                                dens_increment= 0;
                             }
+                            particle_i.rho += dens_increment;
+                            particle_j.rho += dens_increment;
                         }
-                    }
+                        }
                 }
-                contador++;
+
             }
         }
+    }
+}
 
-    }
-    std::cout << contador << "\n";
-}
-void eliminar_particulas(std::vector<Block>& bloques) {
-    for (Block &bloque : bloques) {
-        bloque.particles.clear();
-    }
-}
 
 
 //BING
@@ -193,7 +194,15 @@ void eliminar_particulas(std::vector<Block>& bloques) {
     }
 }*/
 
-
+void eliminar_particulas(std::vector<Block>& bloques) {
+    for (Block &bloque : bloques) {
+        //std::cout << "Bloque ID: " << bloque.id << std::endl;
+        for (Particle &particle : bloque.particles) {
+            //std::cout << "  Particle ID: " << particle.id << ", rho: " << particle.rho << std::endl;
+        }
+        bloque.particles.clear();
+    }
+}
 
 void crearBloques(std::vector<Block>& bloques,std::vector<Particle>& particles){
     // Primero, creamos los bloques
@@ -207,7 +216,7 @@ void crearBloques(std::vector<Block>& bloques,std::vector<Particle>& particles){
             }
         }
     }
-    //anotar_adyacentes(bloques);
+    anotar_adyacentes(bloques);
     //recorrer_adyacentes(bloques);
     for(int i=0;i<2000;i++){
         anadir_particulas(bloques,particles);
